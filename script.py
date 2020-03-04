@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar  4 09:22:13 2020
-
-@author: ISCoop4
 """
 
 from datetime import date
@@ -317,7 +315,7 @@ def main():
             
             notes = ' '
             
-            with open(r'C:\\Users\\iscoop4\\Drexel University\\Information Security - Threat Hunting\\domains.csv', 'a', newline='') as csvfile:
+            with open(r'C:\\Users\\domains.csv', 'a', newline='') as csvfile:
                 fieldnames = ['Domain', 'IP', 'Created Date', 'Expiry Date', 'WHOIS Name', 'WHOIS Email', 'WHOIS Register', 'ASN Registry', 'ASN #', 'ASN CIDR', 'ASN Country', 'ASN Description', 'Notes']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writerow({'Domain':domain, 'IP':ip, 'Created Date':created, 'Expiry Date':expiry, 'WHOIS Name':name, 'WHOIS Email':email, 'WHOIS Register':registar, 'ASN Registry':asnRegistry, 'ASN #':asnNum, 'ASN CIDR':asnCIDR, 'ASN Country':asnCountry, 'ASN Description':asnDesc, 'Notes':notes})
