@@ -22,3 +22,7 @@ Just change the search term in main()
 * https://github.com/elceef/dnstwist
 
 * https://github.com/gfek/Hunting-New-Registered-Domains
+
+## Search Generation
+
+* https://www.cybrary.it/blog/0p3n/typo-squatting-domains/
