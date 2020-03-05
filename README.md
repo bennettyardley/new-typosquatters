@@ -1,21 +1,24 @@
 # new-typosquatters
+
 Finds newly registered domains that could potential be typo-squatters
 
 Just change the search term in main()
 
-reqs:
+## reqs:
 
-pyahocorasick
+* Python3
 
-requests
+* pyahocorasick
 
-python-whois
+* requests
 
-ipwhois
+* python-whois
+
+* ipwhois
 
 
-thanks to:
+## thanks to:
 
-https://github.com/elceef/dnstwist
+* https://github.com/elceef/dnstwist
 
-https://github.com/gfek/Hunting-New-Registered-Domains
+* https://github.com/gfek/Hunting-New-Registered-Domains
