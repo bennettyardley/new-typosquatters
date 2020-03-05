@@ -1,7 +1,13 @@
 # new-typosquatters
 Finds newly registered domains that could potential be typo-squatters
 
-pyahocorasick 
+Just change the search term in main()
+
+reqs:
+pyahocorasick
+
 requests
+
 python-whois
+
 ipwhois
