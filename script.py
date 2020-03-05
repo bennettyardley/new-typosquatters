@@ -18,6 +18,9 @@ from ipwhois.net import Net
 from ipwhois.asn import IPASN
 import time
 import mmap
+import ahocorasick
+import itertools
+
 
 
 def donwnload_nrd(d):
@@ -77,7 +80,7 @@ def insertion(domain):
 
     return result
 
-          
+
 def homoglyph(domain):
     glyphs = {
         'a': [u'à', u'á', u'â', u'ã', u'ä', u'å', u'ɑ', u'ạ', u'ǎ', u'ă', u'ȧ', u'ą'],
@@ -139,7 +142,7 @@ def homoglyph(domain):
                             result_2pass.append(domain[:i] + win + domain[i+ws:])
                             win = win_copy
                     j += 1
-                    
+
     result = result_1pass + result_2pass
     return result
 
@@ -251,8 +254,8 @@ def subdomain(domain):
 
 def main():
     search = "drexel"
-    
-    #homoglyph_search = homoglyph(search)
+
+    homoglyph_search = homoglyph(search)
     insertion_search = insertion(search)
     omission_search = omission(search)
     transposition_search = transposition(search)
@@ -263,61 +266,72 @@ def main():
     bitsquatting_search = bitsquatting(search)
     hyphenation_search = hyphenation(search)
     subdomain_search = subdomain(search)
-    search_all = bitsquatting_search+hyphenation_search+subdomain_search+insertion_search+omission_search+transposition_search+vowel_swap_search+addition_search+repetition_search+replacement_search
-    #search_all = bitsquatting_search+hyphenation_search+subdomain_search+homoglyph_search+insertion_search+omission_search+transposition_search+vowel_swap_search+addition_search+repetition_search+replacement_search
+    search_all = bitsquatting_search+hyphenation_search+subdomain_search+homoglyph_search+insertion_search+omission_search+transposition_search+vowel_swap_search+addition_search+repetition_search+replacement_search
     search_all.append(search)
-    
+
     print("Amount of search terms: " + str(len(search_all)))
-    
+
     for i in range(0,7):
         dates = (date.today() - timedelta(days=i+1))
-        
+
         dates = dates.strftime('%Y-%m-%d')
         print(dates)
         donwnload_nrd(dates)
-        
+
         DOMAINS = []
-        
-        #f = open(dates + '.txt','r')
-        #for arg in search_all:
-        #    if arg in f.read():
-        #        DOMAINS.append(dates)
-        
-        #for row in f:
-        #    for argssearch in search_all:
-        #       if argssearch in row:
-        #           DOMAINS.append(row.strip('\r\n'))
-        
-        print(DOMAINS)
+        ITEMS = []
+        NAMES = []
+
+        f = open(dates + '.txt','r')
+        for row in f:
+            NAMES.append(row.strip('\r\n'))
+
+        A = ahocorasick.Automaton()
+        for idx, key in enumerate(search_all):
+            A.add_word(key, (idx, key))
+
+        A.make_automaton()
+        for item in A.iter("".join(NAMES)):
+            ITEMS.append(item)
+
+        for name in NAMES:
+            for item in ITEMS:
+                ite = re.findall("'([^']*)'", str(item))
+                for it in ite:
+                    if it in name:
+                        DOMAINS.append(name.strip('\r\n'))
+
         for domain in DOMAINS:
             print("Domain Name Found: " + domain)
-            w_res = whois.whois(domain)
-            name = w_res.name
-            created = w_res.creation_date
-            email = w_res.emails
-            registar = w_res.registrar
-            expiry = w_res.expiration_date
-            
-            ip = socket.gethostbyname(domain)
-            net = Net(ip)
-            obj = IPASN(net)
-            y = obj.lookup()
-            if 'asn_registry' in y:
-                asnRegistry=y.get('asn_registry')
-            if 'asn' in y:
-                asnNum=y.get('asn')
-            if 'asn_cidr' in y:
-                asnCIDR=y.get('asn_cidr')
-            if 'asn_country_code' in y:
-                asnCountry=y.get('asn_country_code')
-            if 'asn_description' in y:
-                asnDesc=y.get('asn_description')
-            
-            notes = ' '
-            
-            with open(r'C:\\Users\\domains.csv', 'a', newline='') as csvfile:
-                fieldnames = ['Domain', 'IP', 'Created Date', 'Expiry Date', 'WHOIS Name', 'WHOIS Email', 'WHOIS Register', 'ASN Registry', 'ASN #', 'ASN CIDR', 'ASN Country', 'ASN Description', 'Notes']
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writerow({'Domain':domain, 'IP':ip, 'Created Date':created, 'Expiry Date':expiry, 'WHOIS Name':name, 'WHOIS Email':email, 'WHOIS Register':registar, 'ASN Registry':asnRegistry, 'ASN #':asnNum, 'ASN CIDR':asnCIDR, 'ASN Country':asnCountry, 'ASN Description':asnDesc, 'Notes':notes})
+            try:
+                w_res = whois.whois(domain)
+                name = w_res.name
+                created = w_res.creation_date
+                email = w_res.emails
+                registar = w_res.registrar
+                expiry = w_res.expiration_date
 
+                ip = socket.gethostbyname(domain)
+                net = Net(ip)
+                obj = IPASN(net)
+                y = obj.lookup()
+                if 'asn_registry' in y:
+                    asnRegistry=y.get('asn_registry')
+                if 'asn' in y:
+                    asnNum=y.get('asn')
+                if 'asn_cidr' in y:
+                    asnCIDR=y.get('asn_cidr')
+                if 'asn_country_code' in y:
+                    asnCountry=y.get('asn_country_code')
+                if 'asn_description' in y:
+                    asnDesc=y.get('asn_description')
+
+                notes = ' '
+
+                with open(r'C:\\Users\\domains.csv', 'a', newline='') as csvfile:
+                    fieldnames = ['Domain', 'IP', 'Created Date', 'Expiry Date', 'WHOIS Name', 'WHOIS Email', 'WHOIS Register', 'ASN Registry', 'ASN #', 'ASN CIDR', 'ASN Country', 'ASN Description', 'Notes']
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                    writer.writerow({'Domain':domain, 'IP':ip, 'Created Date':created, 'Expiry Date':expiry, 'WHOIS Name':name, 'WHOIS Email':email, 'WHOIS Register':registar, 'ASN Registry':asnRegistry, 'ASN #':asnNum, 'ASN CIDR':asnCIDR, 'ASN Country':asnCountry, 'ASN Description':asnDesc, 'Notes':notes})
+            except:
+                pass
 main()
