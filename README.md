@@ -4,6 +4,7 @@ Finds newly registered domains that could potential be typo-squatters
 Just change the search term in main()
 
 reqs:
+
 pyahocorasick
 
 requests
@@ -11,3 +12,10 @@ requests
 python-whois
 
 ipwhois
+
+
+thanks to:
+
+https://github.com/elceef/dnstwist
+
+https://github.com/gfek/Hunting-New-Registered-Domains
