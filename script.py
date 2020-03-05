@@ -17,9 +17,7 @@ import socket
 from ipwhois.net import Net
 from ipwhois.asn import IPASN
 import time
-import mmap
 import ahocorasick
-import itertools
 
 
 
